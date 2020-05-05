@@ -10,7 +10,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "sysdefs.h"
+#include "../src/common/sysdefs.h"
 #include <stdio.h>
 #include <ctype.h>
 
