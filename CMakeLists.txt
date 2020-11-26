@@ -75,8 +75,7 @@ set(lzma_SOURCES
     src/liblzma/simple/simple_decoder.c
     src/liblzma/simple/simple_encoder.c
     src/liblzma/simple/sparc.c
-    src/liblzma/simple/x86.c
-)
+    src/liblzma/simple/x86.c)
 
 set(lzma_HEADERS
     src/common/mythread.h
@@ -144,42 +143,33 @@ set(lzma_HEADERS
     src/liblzma/simple/simple_coder.h
     src/liblzma/simple/simple_decoder.h
     src/liblzma/simple/simple_encoder.h
-    src/liblzma/simple/simple_private.h
-)
+    src/liblzma/simple/simple_private.h)
 
-include_directories(
-    src/common
-    src/liblzma/api
-    src/liblzma/check
-    src/liblzma/common
-    src/liblzma/delta
-    src/liblzma/lz
-    src/liblzma/lzma
-    src/liblzma/rangecoder
-    src/liblzma/simple
-)
+include_directories(src/common src/liblzma/api src/liblzma/check src/liblzma/common src/liblzma/delta src/liblzma/lz src/liblzma/lzma src/liblzma/rangecoder src/liblzma/simple)
 
-if (MSVC)
-    add_definitions(-DHAVE_CONFIG_H)
-    include_directories(windows)
+if(MSVC)
+  add_definitions(-DHAVE_CONFIG_H)
+  include_directories(windows)
 endif()
 
 # Static library
 add_library(liblzma STATIC ${lzma_SOURCES} ${lzma_HEADERS})
 target_compile_definitions(liblzma PRIVATE LZMA_API_STATIC)
 set_target_properties(liblzma PROPERTIES PREFIX "") # We already have lib in the target name.
+if(NOT LZMA_NO_INSTALL)
+  install(TARGETS liblzma DESTINATION lib)
+endif(NOT LZMA_NO_INSTALL)
 
-# Shared library
-if (WIN32)
+if(NOT LZMA_NO_SHARED)
+  # Shared library
+  if(WIN32)
     list(APPEND lzma_SOURCES src/liblzma/liblzma_w32res.rc)
-endif()
-add_library(lzma SHARED ${lzma_SOURCES} ${lzma_HEADERS})
-target_compile_definitions(lzma PRIVATE DLL_EXPORT)
+  endif()
+  add_library(lzma SHARED ${lzma_SOURCES} ${lzma_HEADERS})
+  target_compile_definitions(lzma PRIVATE DLL_EXPORT)
+  install(TARGETS lzma DESTINATION lib)
+endif(NOT LZMA_NO_SHARED)
 
-
-install(TARGETS liblzma lzma
-    RUNTIME DESTINATION "bin"
-    ARCHIVE DESTINATION "lib"
-    LIBRARY DESTINATION "lib"
-)
-install(DIRECTORY src/liblzma/api/ DESTINATION "include" FILES_MATCHING PATTERN "*.h")
+if(NOT LZMA_NO_INSTALL)
+  install(DIRECTORY src/liblzma/api/ DESTINATION "include" FILES_MATCHING PATTERN "*.h")
+endif(NOT LZMA_NO_INSTALL)
